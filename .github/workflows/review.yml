@@ -1,0 +1,27 @@
+name: review
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup project
+        uses: ./.github/actions/setup-project
+
+      - name: 🧪 Test project
+        run: bun run test
+
+      - name: 🚨 Lint project
+        run: bun run lint
+
+      - name: 👷 Build project
+        run: bun run build
