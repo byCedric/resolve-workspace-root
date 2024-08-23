@@ -154,6 +154,17 @@ describe('bun, npm, yarn', () => {
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
   });
+
+  it('ignores folder named as package.json', () => {
+    vol.fromJSON({
+      '/test/packages/awesome-pkg/package.json': JSON.stringify({
+        name: 'awesome-pkg',
+      }),
+      '/test/package.json/test.txt': 'this creates the folder',
+    });
+
+    expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+  });
 });
 
 describe('pnpm', () => {
@@ -237,6 +248,17 @@ describe('pnpm', () => {
         name: 'awesome-pkg',
       }),
       '/test/pnpm-workspace.yaml': stringifyYaml({ packages: ['packages/*'] }),
+    });
+
+    expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+  });
+
+  it('ignores folder named as package.json', () => {
+    vol.fromJSON({
+      '/test/packages/awesome-pkg/package.json': JSON.stringify({
+        name: 'awesome-pkg',
+      }),
+      '/test/package.json/test.txt': 'this creates the folder',
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
