@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import { dump as stringifyYaml } from 'js-yaml';
 import { fs, vol } from 'memfs';
 
-import { resolveWorkspaceRootAsync } from '..';
+import { resolveWorkspaceRootAsync, getWorkspaceGlobsAsync } from '..';
 
 mock.module('node:fs', () => ({ default: fs }));
 
@@ -22,6 +22,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe('/test');
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
     });
 
     it('detects root from nested workspace', async () => {
@@ -38,6 +39,7 @@ describe('bun, npm, yarn', () => {
       await expect(resolveWorkspaceRootAsync('/test/packages/tooling/awesome-pkg')).resolves.toBe(
         '/test'
       );
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/tooling/*']);
     });
 
     it('detects root from root', async () => {
@@ -49,6 +51,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test')).resolves.toBe('/test');
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
     });
 
     it('ignores mismatching workspace', async () => {
@@ -63,6 +66,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['apps/*']);
     });
   });
 
@@ -79,6 +83,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe('/test');
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
     });
 
     it('detects root from nested workspace', async () => {
@@ -95,6 +100,7 @@ describe('bun, npm, yarn', () => {
       await expect(resolveWorkspaceRootAsync('/test/packages/tooling/awesome-pkg')).resolves.toBe(
         '/test'
       );
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/tooling/*']);
     });
 
     it('detects root from root', async () => {
@@ -106,6 +112,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test')).resolves.toBe('/test');
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
     });
 
     it('ignores mismatching workspace', async () => {
@@ -120,6 +127,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['apps/*']);
     });
 
     it('ignores invalid workspace config', async () => {
@@ -134,6 +142,7 @@ describe('bun, npm, yarn', () => {
       });
 
       await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+      await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
     });
   });
 
@@ -146,6 +155,7 @@ describe('bun, npm, yarn', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 
   it('ignores empty json in root', async () => {
@@ -157,6 +167,7 @@ describe('bun, npm, yarn', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 
   it('ignores folder named as package.json', async () => {
@@ -168,6 +179,7 @@ describe('bun, npm, yarn', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 });
 
@@ -182,6 +194,7 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe('/test');
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
   });
 
   it('detects root from nested workspace', async () => {
@@ -198,6 +211,7 @@ describe('pnpm', () => {
     await expect(resolveWorkspaceRootAsync('/test/packages/tooling/awesome-pkg')).resolves.toBe(
       '/test'
     );
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/tooling/*']);
   });
 
   it('detects root from root', async () => {
@@ -210,6 +224,7 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test')).resolves.toBe('/test');
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
   });
 
   it('ignores mismatching workspace', async () => {
@@ -222,6 +237,7 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['apps/*']);
   });
 
   it('ignores invalid yaml in root', async () => {
@@ -234,6 +250,7 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 
   it('ignores empty yaml in root', async () => {
@@ -246,6 +263,7 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 
   it('ignores missing workspace package.json', async () => {
@@ -257,6 +275,8 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    // Note: in this case, its still correct to actually return the workspace globs
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
   });
 
   it('ignores folder named as package.json', async () => {
@@ -268,5 +288,6 @@ describe('pnpm', () => {
     });
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
   });
 });

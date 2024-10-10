@@ -25,6 +25,13 @@ const workspaceRoot = await resolveWorkspaceRootAsync(__dirname);
 const workspaceRoot = await resolveWorkspaceRootAsync(__dirname, { packageWorkspaces: false });
 // Asynchronous lookup, supporting only pnpm
 const workspaceRoot = await resolveWorkspaceRootAsync(__dirname, { pnpmWorkspaces: false });
+
+import { getWorkspaceGlobs, getWorkspaceGlobsAsync } from 'resolve-workspace-root';
+
+// Synchronous lookup, supporting bun, npm, pnpm, and yarn
+const workspaces = getWorkspaceGlobs(resolveWorkspaceRoot(__dirname));
+// Asynchronous lookup, supporting bun, npm, pnpm, and yarn
+const workspaces = await getWorkspaceGlobsAsync(resolveWorkspaceRoot(__dirname));
 ```
 
 <div align="center">

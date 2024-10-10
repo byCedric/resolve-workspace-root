@@ -79,3 +79,63 @@ export function resolveWorkspaceRootAsync(
     }
   });
 }
+
+/**
+ * Get the configured workspace globs from the monorepo.
+ *   - For bun and npm - it looks for the [`workspaces` list](https://docs.npmjs.com/cli/configuring-npm/package-json#workspaces) in `package.json`
+ *   - For yarn - it looks for the [`workspaces` list or config](https://yarnpkg.com/features/workspaces) in `package.json`
+ *   - For pnpm - it looks for the [`pnpm-workspace.yaml`](https://pnpm.io/workspaces) file
+ * @note The provided `rootDir` must be the root of the monorepo
+ */
+export function getWorkspaceGlobs(
+  rootDir = process.cwd(),
+  options: ResolveWorkspaceOptions = {}
+): string[] | null {
+  if (options.packageWorkspaces !== false) {
+    const packageContent = tryReadFile(path.join(rootDir, 'package.json'));
+    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+    if (packageGlobs) {
+      return packageGlobs;
+    }
+  }
+
+  if (options.pnpmWorkspaces !== false) {
+    const workspaceContent = tryReadFile(path.join(rootDir, 'pnpm-workspace.yaml'));
+    const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
+    if (workspaceGlobs) {
+      return workspaceGlobs;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Get the configured workspace globs from the monorepo.
+ *   - For bun and npm - it looks for the [`workspaces` list](https://docs.npmjs.com/cli/configuring-npm/package-json#workspaces) in `package.json`
+ *   - For yarn - it looks for the [`workspaces` list or config](https://yarnpkg.com/features/workspaces) in `package.json`
+ *   - For pnpm - it looks for the [`pnpm-workspace.yaml`](https://pnpm.io/workspaces) file
+ * @note The provided `rootDir` must be the root of the monorepo
+ */
+export async function getWorkspaceGlobsAsync(
+  rootDir = process.cwd(),
+  options: ResolveWorkspaceOptions = {}
+): Promise<string[] | null> {
+  if (options.packageWorkspaces !== false) {
+    const packageContent = await tryReadFileAsync(path.join(rootDir, 'package.json'));
+    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+    if (packageGlobs) {
+      return packageGlobs;
+    }
+  }
+
+  if (options.pnpmWorkspaces !== false) {
+    const workspaceContent = await tryReadFileAsync(path.join(rootDir, 'pnpm-workspace.yaml'));
+    const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
+    if (workspaceGlobs) {
+      return workspaceGlobs;
+    }
+  }
+
+  return null;
+}

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import { dump as stringifyYaml } from 'js-yaml';
 import { fs, vol } from 'memfs';
 
-import { resolveWorkspaceRoot } from '..';
+import { resolveWorkspaceRoot, getWorkspaceGlobs } from '..';
 
 mock.module('node:fs', () => ({ default: fs }));
 
@@ -22,6 +22,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
     });
 
     it('detects root from nested workspace', () => {
@@ -36,6 +37,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/tooling/awesome-pkg')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/tooling/*']);
     });
 
     it('detects root from root', () => {
@@ -47,6 +49,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
     });
 
     it('ignores mismatching workspace', () => {
@@ -61,6 +64,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+      expect(getWorkspaceGlobs('/test')).toEqual(['apps/*']);
     });
   });
 
@@ -77,6 +81,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
     });
 
     it('detects root from nested workspace', () => {
@@ -91,6 +96,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/tooling/awesome-pkg')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/tooling/*']);
     });
 
     it('detects root from root', () => {
@@ -102,6 +108,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test')).toBe('/test');
+      expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
     });
 
     it('ignores mismatching workspace', () => {
@@ -116,6 +123,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+      expect(getWorkspaceGlobs('/test')).toEqual(['apps/*']);
     });
 
     it('ignores invalid workspace config', () => {
@@ -130,6 +138,7 @@ describe('bun, npm, yarn', () => {
       });
 
       expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+      expect(getWorkspaceGlobs('/test')).toEqual(null);
     });
   });
 
@@ -142,6 +151,7 @@ describe('bun, npm, yarn', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 
   it('ignores empty json in root', () => {
@@ -153,6 +163,7 @@ describe('bun, npm, yarn', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 
   it('ignores folder named as package.json', () => {
@@ -164,6 +175,7 @@ describe('bun, npm, yarn', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 });
 
@@ -178,6 +190,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe('/test');
+    expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
   });
 
   it('detects root from nested workspace', () => {
@@ -192,6 +205,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/tooling/awesome-pkg')).toBe('/test');
+    expect(getWorkspaceGlobs('/test')).toEqual(['packages/tooling/*']);
   });
 
   it('detects root from root', () => {
@@ -204,6 +218,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test')).toBe('/test');
+    expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
   });
 
   it('ignores mismatching workspace', () => {
@@ -216,6 +231,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(['apps/*']);
   });
 
   it('ignores invalid yaml in root', () => {
@@ -228,6 +244,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 
   it('ignores empty yaml in root', () => {
@@ -240,6 +257,7 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 
   it('ignores missing workspace package.json', () => {
@@ -251,6 +269,8 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    // Note: in this case, its still correct to actually return the workspace globs
+    expect(getWorkspaceGlobs('/test')).toEqual(['packages/*']);
   });
 
   it('ignores folder named as package.json', () => {
@@ -262,5 +282,6 @@ describe('pnpm', () => {
     });
 
     expect(resolveWorkspaceRoot('/test/packages/awesome-pkg')).toBe(null);
+    expect(getWorkspaceGlobs('/test')).toEqual(null);
   });
 });
