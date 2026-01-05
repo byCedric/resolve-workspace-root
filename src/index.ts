@@ -27,17 +27,15 @@ export function resolveWorkspaceRoot(
   options: ResolveWorkspaceOptions = {}
 ): string | null {
   return searchParentDirs(startingDir, (currentDir, relativeDir) => {
-    let packageContent: string | null = null;
-
     if (options.packageWorkspaces !== false) {
-      packageContent = tryReadFile(path.join(currentDir, 'package.json'));
+      const packageContent = tryReadFile(path.join(currentDir, 'package.json'));
       const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
       if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
         return currentDir;
       }
     }
 
-    if (options.pnpmWorkspaces !== false && packageContent) {
+    if (options.pnpmWorkspaces !== false) {
       const workspaceContent = tryReadFile(path.join(currentDir, 'pnpm-workspace.yaml'));
       const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
       if (workspaceGlobs && pathMatchesWorkspaceGlobs(workspaceGlobs, relativeDir)) {
@@ -60,17 +58,15 @@ export function resolveWorkspaceRootAsync(
   options: ResolveWorkspaceOptions = {}
 ): Promise<string | null> {
   return searchParentDirsAsync(startingDir, async (currentDir, relativeDir) => {
-    let packageContent: string | null = null;
-
     if (options.packageWorkspaces !== false) {
-      packageContent = await tryReadFileAsync(path.join(currentDir, 'package.json'));
+      const packageContent = await tryReadFileAsync(path.join(currentDir, 'package.json'));
       const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
       if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
         return currentDir;
       }
     }
 
-    if (options.pnpmWorkspaces !== false && packageContent) {
+    if (options.pnpmWorkspaces !== false) {
       const workspaceContent = await tryReadFileAsync(path.join(currentDir, 'pnpm-workspace.yaml'));
       const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
       if (workspaceGlobs && pathMatchesWorkspaceGlobs(workspaceGlobs, relativeDir)) {
