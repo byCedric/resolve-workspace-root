@@ -27,18 +27,18 @@ export function resolveWorkspaceRoot(
   options: ResolveWorkspaceOptions = {}
 ): string | null {
   return searchParentDirs(startingDir, (currentDir, relativeDir) => {
-    if (options.packageWorkspaces !== false) {
-      const packageContent = tryReadFile(path.join(currentDir, 'package.json'));
-      const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
-      if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
-        return currentDir;
-      }
-    }
-
     if (options.pnpmWorkspaces !== false) {
       const workspaceContent = tryReadFile(path.join(currentDir, 'pnpm-workspace.yaml'));
       const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
       if (workspaceGlobs && pathMatchesWorkspaceGlobs(workspaceGlobs, relativeDir)) {
+        return currentDir;
+      }
+    }
+
+    if (options.packageWorkspaces !== false) {
+      const packageContent = tryReadFile(path.join(currentDir, 'package.json'));
+      const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+      if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
         return currentDir;
       }
     }
@@ -58,18 +58,18 @@ export function resolveWorkspaceRootAsync(
   options: ResolveWorkspaceOptions = {}
 ): Promise<string | null> {
   return searchParentDirsAsync(startingDir, async (currentDir, relativeDir) => {
-    if (options.packageWorkspaces !== false) {
-      const packageContent = await tryReadFileAsync(path.join(currentDir, 'package.json'));
-      const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
-      if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
-        return currentDir;
-      }
-    }
-
     if (options.pnpmWorkspaces !== false) {
       const workspaceContent = await tryReadFileAsync(path.join(currentDir, 'pnpm-workspace.yaml'));
       const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
       if (workspaceGlobs && pathMatchesWorkspaceGlobs(workspaceGlobs, relativeDir)) {
+        return currentDir;
+      }
+    }
+
+    if (options.packageWorkspaces !== false) {
+      const packageContent = await tryReadFileAsync(path.join(currentDir, 'package.json'));
+      const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+      if (packageGlobs && pathMatchesWorkspaceGlobs(packageGlobs, relativeDir)) {
         return currentDir;
       }
     }
@@ -87,19 +87,19 @@ export function getWorkspaceGlobs(
   rootDir = process.cwd(),
   options: ResolveWorkspaceOptions = {}
 ): string[] | null {
-  if (options.packageWorkspaces !== false) {
-    const packageContent = tryReadFile(path.join(rootDir, 'package.json'));
-    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
-    if (packageGlobs) {
-      return packageGlobs;
-    }
-  }
-
   if (options.pnpmWorkspaces !== false) {
     const workspaceContent = tryReadFile(path.join(rootDir, 'pnpm-workspace.yaml'));
     const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
     if (workspaceGlobs) {
       return workspaceGlobs;
+    }
+  }
+
+  if (options.packageWorkspaces !== false) {
+    const packageContent = tryReadFile(path.join(rootDir, 'package.json'));
+    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+    if (packageGlobs) {
+      return packageGlobs;
     }
   }
 
@@ -117,19 +117,19 @@ export async function getWorkspaceGlobsAsync(
   rootDir = process.cwd(),
   options: ResolveWorkspaceOptions = {}
 ): Promise<string[] | null> {
-  if (options.packageWorkspaces !== false) {
-    const packageContent = await tryReadFileAsync(path.join(rootDir, 'package.json'));
-    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
-    if (packageGlobs) {
-      return packageGlobs;
-    }
-  }
-
   if (options.pnpmWorkspaces !== false) {
     const workspaceContent = await tryReadFileAsync(path.join(rootDir, 'pnpm-workspace.yaml'));
     const workspaceGlobs = workspaceContent && workspaceGlobsFromPnpm(workspaceContent);
     if (workspaceGlobs) {
       return workspaceGlobs;
+    }
+  }
+
+  if (options.packageWorkspaces !== false) {
+    const packageContent = await tryReadFileAsync(path.join(rootDir, 'package.json'));
+    const packageGlobs = packageContent && workspaceGlobsFromPackage(packageContent);
+    if (packageGlobs) {
+      return packageGlobs;
     }
   }
 
