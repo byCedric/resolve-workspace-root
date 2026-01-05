@@ -1,6 +1,6 @@
 {
   "name": "resolve-workspace-root",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Resolve the workspace root using bun, npm, pnpm, or yarn",
   "main": "build/index.js",
   "types": "build/index.d.ts",
