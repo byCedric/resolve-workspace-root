@@ -227,6 +227,19 @@ describe('pnpm', () => {
     await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
   });
 
+  it('detects root with missing package.json', async () => {
+    vol.fromJSON({
+      '/test/packages/awesome-pkg/package.json': JSON.stringify({
+        name: 'awesome-pkg',
+      }),
+      '/test/pnpm-workspace.yaml': stringifyYaml({ packages: ['packages/*'] }),
+    });
+
+    await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe('/test');
+    // Note: in this case, its still correct to actually return the workspace globs
+    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
+  });
+
   it('ignores mismatching workspace', async () => {
     vol.fromJSON({
       '/test/packages/awesome-pkg/package.json': JSON.stringify({
@@ -264,19 +277,6 @@ describe('pnpm', () => {
 
     await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
     await expect(getWorkspaceGlobsAsync('/test')).resolves.toBe(null);
-  });
-
-  it('ignores missing workspace package.json', async () => {
-    vol.fromJSON({
-      '/test/packages/awesome-pkg/package.json': JSON.stringify({
-        name: 'awesome-pkg',
-      }),
-      '/test/pnpm-workspace.yaml': stringifyYaml({ packages: ['packages/*'] }),
-    });
-
-    await expect(resolveWorkspaceRootAsync('/test/packages/awesome-pkg')).resolves.toBe(null);
-    // Note: in this case, its still correct to actually return the workspace globs
-    await expect(getWorkspaceGlobsAsync('/test')).resolves.toEqual(['packages/*']);
   });
 
   it('ignores folder named as package.json', async () => {
